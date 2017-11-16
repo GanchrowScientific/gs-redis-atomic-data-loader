@@ -1,0 +1,15 @@
+*.map
+*.swp
+*.js
+.syntastic*
+build
+*.node
+lib
+node_modules
+target
+npm-debug.log*
+*.sublime-project
+*.sublime-workspace
+.vscode
+patch.diff
+package.yml

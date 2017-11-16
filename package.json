@@ -1,0 +1,42 @@
+{
+  "name": "gs-redis-atomic-data-loader",
+  "description": "Redis Atomimc Data Loader.",
+  "repository": "http://gerrit.ganchrow.com:8080/gs-redis-atomic-data-loader",
+  "version": "0.0.1",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "dependencies": {
+    "gs-utils": "2.7.0",
+    "redis": "2.8.0",
+    "source-map-support": "0.5.0"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "prepare": "scripts/post-install.sh",
+    "test": "scripts/test.sh",
+    "clean": "rm -rf target lib"
+  },
+  "devDependencies": {
+    "@types/node": "8.0.53",
+    "@types/nodeunit": "0.0.30",
+    "@types/proxyquire": "1.3.28",
+    "@types/redis": "2.8.1",
+    "@types/sinon": "4.0.0",
+    "gs-ts-lint": "1.2.0",
+    "gs-typescript-config": "1.0.3",
+    "istanbul": "0.4.2",
+    "nodeunit": "0.9.1",
+    "proxyquire": "1.7.10",
+    "remap-istanbul": "0.5.1",
+    "sinon": "1.17.4",
+    "temp": "0.8.3",
+    "tslint": "5.8.0",
+    "typescript": "2.6.1"
+  },
+  "engines": {
+    "node": ">=7.0"
+  },
+  "optionalDependencies": {
+    "hiredis": "0.5.0"
+  }
+}

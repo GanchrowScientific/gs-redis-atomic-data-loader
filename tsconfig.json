@@ -1,0 +1,12 @@
+{
+  "extends": "./node_modules/gs-typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "target/dist"
+  },
+  "exclude": [
+    "node_modules",
+    "target",
+    "lib"
+  ]
+}
