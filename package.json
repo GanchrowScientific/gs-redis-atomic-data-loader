@@ -2,7 +2,7 @@
   "name": "gs-redis-atomic-data-loader",
   "description": "Redis Atomimc Data Loader.",
   "repository": "http://gerrit.ganchrow.com:8080/gs-redis-atomic-data-loader",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
