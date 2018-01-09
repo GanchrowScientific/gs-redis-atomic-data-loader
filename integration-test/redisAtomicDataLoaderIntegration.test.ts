@@ -40,8 +40,9 @@ let config = {
 
 let logger = getLogger('rmc integration test');
 
-let client = redis.createClient(6380, 'saget', {
-  password: 'test_me_sideways'
+let client = redis.createClient(11000, 'ashley', {
+  password: 'baalm_in_8i13a6',
+  db: 9
 });
 let rmc = new RedisAtomicDataLoader(<any> client, config);
 let secondTestDone = false;
