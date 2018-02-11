@@ -1,8 +1,8 @@
 {
   "name": "gs-redis-atomic-data-loader",
-  "description": "Redis Atomimc Data Loader.",
-  "repository": "http://gerrit.ganchrow.com:8080/gs-redis-atomic-data-loader",
-  "version": "1.0.0",
+  "description": "Codeless redis data loader!!!",
+  "repository": "https://github.com/GanchrowScientific/gs-redis-atomic-data-loader",
+  "version": "1.0.1",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -10,13 +10,14 @@
     "redis": "^2.8.0",
     "source-map-support": "^0.5.0"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "scripts": {
     "prepare": "scripts/post-install.sh",
     "test": "scripts/test.sh",
     "unit": "node_modules/.bin/nodeunit",
     "clean": "rm -rf target lib",
-    "coverage": "scripts/coverage.sh"
+    "coverage": "scripts/coverage.sh",
+    "prepublishOnly": "scripts/push-to-github.sh"
   },
   "devDependencies": {
     "@types/node": "8.0.53",
@@ -39,5 +40,8 @@
   },
   "optionalDependencies": {
     "hiredis": "0.5.0"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.com"
   }
 }
