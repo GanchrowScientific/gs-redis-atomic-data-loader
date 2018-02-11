@@ -40,8 +40,9 @@ let config = {
 
 let logger = getLogger('rmc integration test');
 
-let client = redis.createClient(11000, 'ashley', {
-  password: 'baalm_in_8i13a6',
+let client = redis.createClient({
+  port: 6379,
+  host: 'localhost',
   db: 9
 });
 let rmc = new RedisAtomicDataLoader(<any> client, config);
