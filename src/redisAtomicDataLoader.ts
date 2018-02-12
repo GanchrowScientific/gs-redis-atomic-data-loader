@@ -24,6 +24,7 @@ export interface RedisAtomicClient {
   subscribe(pattern: string, cb?: Function): void;
   psubscribe(pattern: string, cb?: Function): void;
   on(type: string, cb: Function): void;
+  quit(): void;
 }
 
 export class RedisAtomicDataLoader extends PrivateEventEmitter {
@@ -75,6 +76,7 @@ export class RedisAtomicDataLoader extends PrivateEventEmitter {
       }
     });
     subscriptionClient.subscribe(ch);
+    this.clean(subscriptionClient);
   }
 
   public psubscribe(ch: string, cb: Function) {
@@ -83,6 +85,12 @@ export class RedisAtomicDataLoader extends PrivateEventEmitter {
       cb(message, pattern, channel);
     });
     subscriptionClient.psubscribe(ch);
+    this.clean(subscriptionClient);
+  }
+
+  public quit() {
+    this.client.quit();
+    this.emit('quit');
   }
 
   private isBusyWaitingError(err: Error) {
@@ -102,6 +110,13 @@ export class RedisAtomicDataLoader extends PrivateEventEmitter {
         }
       });
       subscriptionClient.subscribe(persistChannel);
+    });
+    this.clean(subscriptionClient);
+  }
+
+  private clean(client: RedisAtomicClient) {
+    this.on('quit', () => {
+      client.quit();
     });
   }
 }

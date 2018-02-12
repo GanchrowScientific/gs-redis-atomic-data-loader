@@ -15,7 +15,8 @@ const EMIT_KEY = 'emit';
 const COMMANDS = [
   'duplicate',
   'eval',
-  'on'
+  'on',
+  'quit'
 ];
 
 let client: any;
@@ -35,6 +36,9 @@ module.exports = {
 
     rmc.on('done', val => {
       test.strictEqual(val, 'result');
+      test.ok(client.quit.notCalled);
+      rmc.quit();
+      test.ok(client.quit.calledOnce);
       test.done();
     });
     rmc.on('error', val => {
@@ -103,6 +107,9 @@ module.exports = {
     client.duplicate().on.firstCall.args[1]('my-channel', 'my-message');
     test.strictEqual(spy.callCount, 1);
     test.deepEqual(spy.firstCall.args, ['my-message', 'my-channel']);
+    test.ok(client.duplicate().quit.notCalled);
+    rmc[EMIT_KEY]('quit');
+    test.ok(client.duplicate().quit.calledOnce);
     test.done();
   },
 
@@ -116,6 +123,9 @@ module.exports = {
 
     client.duplicate().on.firstCall.args[1]('my-pattern', 'my-channel', 'my-message');
     test.deepEqual(spy.firstCall.args, ['my-message', 'my-pattern', 'my-channel']);
+    test.ok(client.duplicate().quit.notCalled);
+    rmc[EMIT_KEY]('quit');
+    test.ok(client.duplicate().quit.calledOnce);
     test.done();
   },
 
@@ -171,7 +181,8 @@ function createFakeRedis(commands = COMMANDS) {
       cmdObj[cmd].returns({
         on: sinon.stub(),
         psubscribe: sinon.stub(),
-        subscribe: sinon.stub()
+        subscribe: sinon.stub(),
+        quit: sinon.stub()
       });
     }
   });
