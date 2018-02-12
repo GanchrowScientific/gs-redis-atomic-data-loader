@@ -2,15 +2,28 @@
 
 ## What does that mean?
 
+Let me show you
+
+```bash
+redis-cli lpush phish down
+redis-cli lpush in with
+redis-cli lpush the disease
+redis-cli lpush c food
+
+redis-cli hset Rach no 2
+redis-cli hset me is cool
+redis-cli hset sideways paul giamathioahiad
 ```
-  {
-    FOO: {
-      loadArray: ['phish', 'in', 'the', 'c']
-    },
-    BAR: {
-      loadHash: ['Rach', 'me', 'sideways']
-    }
+
+```javascript
+{
+  FOO: {
+    loadArray: ['phish', 'in', 'the', 'c']
+  },
+  BAR: {
+    loadHash: ['Rach', 'me', 'sideways']
   }
+}
 ```
 
 ## Okay?  What on Earth are you talking about?
@@ -19,18 +32,22 @@ Well ladies, with just a simple Javascript Object, the gs-redis-atomic-data-load
 
 Behold!  The result:
 
-```
-  {
-    FOO: [/* concatenation of the redis lists 'phish', 'in', 'the', 'c' */],
-    BAR: { /* Merging of redis hashes 'Rach', 'me', and 'sideways' }
+```javascript
+{
+  FOO: ['down', 'with', 'disease', 'food'],
+  BAR: {
+    no: 2,
+    is: 'cool',
+    paul: 'giamathioahiad'
   }
+}
 ```
 
 ## Now now chico, this isn't telling me anything
 
 Fine then.  My name isn't chico BTW
 
-```
+```typescript
 import {RedisAtomicDataLoader} from 'gs-redis-atomic-data-loader';
 
 let loader = new RedisAtomicDataLoader(redisClient, configFromAbove);
@@ -43,7 +60,7 @@ loader.on('done', (cache) => {
 
 Not much I'm afraid, although items can be reloaded
 
-```
+```typescript
 let config = Object.assign(configFromAbove, {persist: 'loadAgain!!!'});
 let loader = new RedisAtomicDataLoader(redisClient, config);
 ```
