@@ -1,11 +1,12 @@
-/* Copyright © 2016-2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
 
 import * as redis from 'redis';
-import * as nodeunit from 'nodeunit';
+
+import 'jasmine';
 
 import {getLogger} from 'gs-utils/lib/gsLogger';
 
@@ -48,8 +49,9 @@ let client = redis.createClient({
 let rmc = new RedisAtomicDataLoader(<any> client, config);
 let secondTestDone = false;
 
-module.exports = {
-  setUp(callback) {
+
+describe('Integration Test', () => {
+  beforeEach(done => {
     client.multi()
       .lpush(keys.a, '1', '2', JSON.stringify([3]))
       .lpush(keys.b, '4', '5', JSON.stringify({ a: 6 }))
@@ -75,19 +77,20 @@ module.exports = {
         if (err) {
           logger.error(err);
         }
-        callback();
-      });
-  },
+        done();
+      })
+    ;
+  });
 
-  testMulti(test: nodeunit.Test) {
+  it('should do multi things', done => {
     rmc.load();
     rmc.on('error', err2 => {
-      test.ok(false, err2.message);
-      test.done();
+      expect(false).toBeTruthy();
+      done();
     });
     rmc.on('done', result => {
       if (!secondTestDone) {
-        test.deepEqual(result, {
+        expect(result).toEqual({
           EXPOSED_KEY1: [[3], 2, 1, { a: 6 }, 5, 4],
           EXPOSED_KEY2: {
             c1: { a: 1 },
@@ -106,32 +109,30 @@ module.exports = {
             'rmc-integration-test-g': [1, 2]
           }
         });
-        secondTest(test);
+        secondTest();
       } else {
-        test.deepEqual(result, {
+        expect(result).toEqual({
           EXPOSED_KEY1: [9, 8, 7, 12, 11, 10]
         });
-        test.expect(2);
-        test.done();
+        done();
       }
     });
-  },
+  });
 
-  tearDown(callback) {
+  afterEach(done => {
     client.del(...Object.keys(keys).map(k => keys[k]), err => {
       if (err) {
         logger.error(err);
       }
-      client.quit();
-      callback();
+      client.quit(done);
     });
-  }
-};
+  });
+});
 
-function secondTest(test: nodeunit.Test) {
+function secondTest() {
   client.multi().del(keys.a, keys.b).lpush(keys.a, '7', '8', '9').lpush(keys.b, '10', '11', '12').exec(err => {
     if (err) {
-      test.ok(false, err.message);
+      expect(false).toBeTruthy();
     }
     rmc.load('EXPOSED_KEY1');
     secondTestDone = true;

@@ -9,8 +9,8 @@ echo
 mkdir -p target
 mkdir -p target/test-reports
 
-NODEUNIT="node_modules/.bin/nodeunit"
-NUOPTS="--reporter junit --output target/test-reports"
+JASMINE="node_modules/jasmine-xml-reporter/bin/jasmine.js"
+JAOPTS="--junitreport --output=target/test-reports/"
 TESTDIR="target/dist/test"
 INTTESTDIR="target/dist/integration-test"
 ALL_RESULTS=0
@@ -21,12 +21,12 @@ TEST='test'
 runTests() {
   for f in $(find $1 -type f -name '*.test.js');
   do
-    echo "TEST: $f";
-    $NODE $NODEUNIT $NUOPTS $f;
+
+    echo "TEST: $f"
+    $JASMINE $JAOPTS $f
     RESULT=$?
 
-    TEST_FILE="target/test-reports/`echo $f | sed 's/.*\///'`.xml"
-    if [[ ! -s "$TEST_FILE" || "$RESULT" -ne 0 ]]; then
+    if [[ "$RESULT" -ne 0 ]]; then
       (( ALL_RESULTS += RESULT ))
       ERROR_MESSAGE+="+ $f\n"
       ((FAILURES++))

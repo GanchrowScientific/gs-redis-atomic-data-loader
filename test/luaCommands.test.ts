@@ -1,18 +1,18 @@
 /* Copyright © 2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
 import {LUA_COMMANDS} from '../src/luaCommands';
 
-module.exports = {
-  testCommandNames(test: nodeunit.Test) {
-    test.deepEqual(Object.keys(LUA_COMMANDS), [
+describe('CommandNames', () => {
+  it('should return expected lua commands', () => {
+    expect(Object.keys(LUA_COMMANDS)).toEqual([
       'isJson',
       'zipHash',
       'commandTable',
       'generate',
       'main'
     ]);
-    test.done();
-  }
-};
+  });
+});

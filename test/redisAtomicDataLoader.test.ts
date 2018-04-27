@@ -1,4 +1,4 @@
-/* Copyright © 2016-2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -6,7 +6,8 @@
 import 'source-map-support/register';
 
 import * as sinon from 'sinon';
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
 import {RedisAtomicDataLoader} from '../src/redisAtomicDataLoader';
 
 const HAS_PERSISTENCE = 'isPersisted';
@@ -21,128 +22,127 @@ const COMMANDS = [
 
 let client: any;
 
-module.exports = {
-  setUp(callback) {
+describe('RedisAtomicDataLoader', () => {
+  beforeEach(() => {
     client = createFakeRedis();
-    callback();
-  },
+  });
 
-  testLoad(test: nodeunit.Test) {
+  it('should load', done => {
     let rmc = new RedisAtomicDataLoader(client, { key1: 9 });
     rmc.load();
-    test.ok(!rmc[HAS_PERSISTENCE]);
-    test.ok(client.eval.calledOnce);
-    test.strictEqual(client.eval.getCall(0).args[2], JSON.stringify({ key1: 9 }));
+    expect(!rmc[HAS_PERSISTENCE]).toBeTruthy();
+    expect(client.eval.calledOnce).toBeTruthy();
+    expect(client.eval.getCall(0).args[2]).toEqual(JSON.stringify({ key1: 9 }));
 
     rmc.on('done', val => {
-      test.strictEqual(val, 'result');
-      test.ok(client.quit.notCalled);
+      expect(val).toEqual('result');
+      expect(client.quit.notCalled).toBeTruthy();
       rmc.quit();
-      test.ok(client.quit.calledOnce);
-      test.done();
+      expect(client.quit.calledOnce).toBeTruthy();
+      done();
     });
     rmc.on('error', val => {
-      test.ok(false, 'Should not call error');
-      test.done();
+      expect(false).toBeTruthy();
+      done();
     });
     client.eval.getCall(0).args[3](null, '"result"');
-  },
+  });
 
-  testLoadWithError(test: nodeunit.Test) {
+  it('should load with error', done => {
     let rmc = new RedisAtomicDataLoader(client, { key1: 9 });
     rmc.load();
-    test.ok(!rmc[HAS_PERSISTENCE]);
-    test.ok(client.eval.calledOnce);
-    test.strictEqual(client.eval.getCall(0).args[2], JSON.stringify({ key1: 9 }));
+    expect(!rmc[HAS_PERSISTENCE]).toBeTruthy();
+    expect(client.eval.calledOnce).toBeTruthy();
+    expect(client.eval.getCall(0).args[2]).toEqual(JSON.stringify({ key1: 9 }));
 
     rmc.on('done', val => {
-      test.ok(false, 'Should not call done');
-      test.done();
+      expect(false).toBeTruthy();
+      done();
     });
     rmc.on('error', val => {
-      test.strictEqual(val, 'error');
-      test.done();
+      expect(val).toEqual('error');
+      done();
     });
     client.eval.getCall(0).args[3]('error', 'result');
-  },
+  });
 
-  testLoadPartialKey(test: nodeunit.Test) {
+  it('should load partial key', done => {
     let rmc = new RedisAtomicDataLoader(client, { key1: 9, key2: 10 });
     rmc.load('key1');
     rmc.load('key2');
-    test.ok(client.eval.calledTwice);
-    test.strictEqual(client.eval.getCall(0).args[2], JSON.stringify({ key1: 9 }));
-    test.strictEqual(client.eval.getCall(1).args[2], JSON.stringify({ key2: 10 }));
-    test.done();
-  },
+    expect(client.eval.calledTwice).toBeTruthy();
+    expect(client.eval.getCall(0).args[2]).toEqual(JSON.stringify({ key1: 9 }));
+    expect(client.eval.getCall(1).args[2]).toEqual(JSON.stringify({ key2: 10 }));
+    done();
+  });
 
-  testLoadInvalidPartialKey(test: nodeunit.Test) {
+  it('should load invalid partial key', done => {
     let rmc = new RedisAtomicDataLoader(client, { key1: 9, key2: 10 });
     rmc.on('done', val => {
-      test.ok(false, 'Should not call done');
-      test.done();
+      expect(false).toBeTruthy();
+      done();
     });
     rmc.on('error', err => {
-      test.strictEqual(err.message, 'Invalid config key key3');
-      test.strictEqual(client.eval.callCount, 0);
-      test.done();
+      expect(err.message).toEqual('Invalid config key key3');
+      expect(client.eval.callCount).toEqual(0);
+      done();
     });
     rmc.load('key3');
-  },
+  });
 
-  testPersistence(test: nodeunit.Test) {
+  it('should handle persistence', done => {
     let rmc = new RedisAtomicDataLoader(client, { persist: 'hey' });
-    test.ok(rmc[HAS_PERSISTENCE]);
-    test.done();
-  },
+    expect(rmc[HAS_PERSISTENCE]).toBeTruthy();
+    done();
+  });
 
-  testSubscribe(test: nodeunit.Test) {
+  it('should subscribe', done => {
     let rmc = new RedisAtomicDataLoader(client, {});
     let spy = sinon.spy();
     rmc.subscribe('my-channel', spy);
-    test.ok(client.duplicate().subscribe.calledOnce);
-    test.ok(client.duplicate().on.calledOnce);
-    test.ok(client.duplicate().subscribe.calledWithExactly('my-channel'));
+    expect(client.duplicate().subscribe.calledOnce).toBeTruthy();
+    expect(client.duplicate().on.calledOnce).toBeTruthy();
+    expect(client.duplicate().subscribe.calledWithExactly('my-channel')).toBeTruthy();
 
     client.duplicate().on.firstCall.args[1]('my-channel', 'my-message');
-    test.strictEqual(spy.callCount, 1);
-    test.deepEqual(spy.firstCall.args, ['my-message', 'my-channel']);
-    test.ok(client.duplicate().quit.notCalled);
+    expect(spy.callCount).toEqual(1);
+    expect(spy.firstCall.args).toEqual(['my-message', 'my-channel']);
+    expect(client.duplicate().quit.notCalled).toBeTruthy();
     rmc[EMIT_KEY]('quit');
-    test.ok(client.duplicate().quit.calledOnce);
-    test.done();
-  },
+    expect(client.duplicate().quit.calledOnce).toBeTruthy();
+    done();
+  });
 
-  testPsubscribe(test: nodeunit.Test) {
+  it('should psubscribe', done => {
     let rmc = new RedisAtomicDataLoader(client, {});
     let spy = sinon.spy();
     rmc.psubscribe('my-channel', spy);
-    test.ok(client.duplicate().psubscribe.calledOnce);
-    test.ok(client.duplicate().on.calledOnce);
-    test.ok(client.duplicate().psubscribe.calledWithExactly('my-channel'));
+    expect(client.duplicate().psubscribe.calledOnce).toBeTruthy();
+    expect(client.duplicate().on.calledOnce).toBeTruthy();
+    expect(client.duplicate().psubscribe.calledWithExactly('my-channel')).toBeTruthy();
 
     client.duplicate().on.firstCall.args[1]('my-pattern', 'my-channel', 'my-message');
-    test.deepEqual(spy.firstCall.args, ['my-message', 'my-pattern', 'my-channel']);
-    test.ok(client.duplicate().quit.notCalled);
+    expect(spy.firstCall.args).toEqual(['my-message', 'my-pattern', 'my-channel']);
+    expect(client.duplicate().quit.notCalled).toBeTruthy();
     rmc[EMIT_KEY]('quit');
-    test.ok(client.duplicate().quit.calledOnce);
-    test.done();
-  },
+    expect(client.duplicate().quit.calledOnce).toBeTruthy();
+    done();
+  });
 
-  testLoadWithPersistence(test: nodeunit.Test) {
+  it('should load with persistence', done => {
     let rmc = new RedisAtomicDataLoader(client, { persist: 'hey' });
     rmc.load();
-    test.ok(rmc[HAS_PERSISTENCE]);
+    expect(rmc[HAS_PERSISTENCE]).toBeTruthy();
     rmc[EMIT_KEY]('done', null);
     rmc[EMIT_KEY]('done', null);
-    test.ok(client.duplicate().subscribe.calledOnce);
-    test.ok(client.duplicate().on.calledOnce);
-    test.ok(client.duplicate().subscribe.calledWithExactly('hey'));
-    test.done();
-  },
+    expect(client.duplicate().subscribe.calledOnce).toBeTruthy();
+    expect(client.duplicate().on.calledOnce).toBeTruthy();
+    expect(client.duplicate().subscribe.calledWithExactly('hey')).toBeTruthy();
+    done();
+  });
 
-  testConfigurationValidator(test: nodeunit.Test) {
-    test.deepEqual(RedisAtomicDataLoader.configurationValidator({
+  it('should validator configuration', done => {
+    expect(RedisAtomicDataLoader.configurationValidator({
       foo: {
         loadArray: true
       },
@@ -154,24 +154,20 @@ module.exports = {
       },
       hucairz: [],
       attackOfTheShow: 'hey'
-    }).sort(), ['hucairz', 'attackOfTheShow', 'baz'].sort());
-    test.done();
-  },
+    }).sort()).toEqual(['hucairz', 'attackOfTheShow', 'baz'].sort());
+    done();
+  });
 
-  testLoadWithNoPersistence(test: nodeunit.Test) {
+  it('should load with no persistence', done => {
     let rmc = new RedisAtomicDataLoader(client, {});
     rmc.load();
-    test.ok(!rmc[HAS_PERSISTENCE]);
+    expect(!rmc[HAS_PERSISTENCE]).toBeTruthy();
     rmc[EMIT_KEY]('done', null);
-    test.ok(!client.duplicate().subscribe.calledOnce);
-    test.ok(!client.duplicate().on.calledOnce);
-    test.done();
-  },
-
-  tearDown(callback) {
-    callback();
-  }
-};
+    expect(!client.duplicate().subscribe.calledOnce).toBeTruthy();
+    expect(!client.duplicate().on.calledOnce).toBeTruthy();
+    done();
+  });
+});
 
 function createFakeRedis(commands = COMMANDS) {
   let cmdObj: any = {};

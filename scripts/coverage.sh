@@ -20,7 +20,8 @@ mkdir -p $REMAP_DIR
 
 # run coverage on unit tests only
 echo Creating coverage reports for unit tests
-node_modules/.bin/istanbul cover --report cobertura --dir $COVERAGE_DIR node_modules/.bin/nodeunit `find target/dist/test/ -name *.test.js` > /dev/null
+JASMINE="node_modules/.bin/jasmine"
+node_modules/.bin/istanbul cover --report cobertura --dir $COVERAGE_DIR $JASMINE `find target/dist/test/ -name *.test.js` > /dev/null
 
 # re-map the coverage report so that typescript sources are shown
 echo Remapping coverage reports for typescript
