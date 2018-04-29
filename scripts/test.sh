@@ -26,6 +26,7 @@ runTests() {
     $JASMINE $JAOPTS $f
     RESULT=$?
 
+    mv target/test-reports/results.xml target/test-reports/`basename $f`.xml
     if [[ "$RESULT" -ne 0 ]]; then
       (( ALL_RESULTS += RESULT ))
       ERROR_MESSAGE+="+ $f\n"
