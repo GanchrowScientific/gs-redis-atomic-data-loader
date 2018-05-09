@@ -13,4 +13,5 @@ npm-debug.log*
 .vscode
 patch.diff
 package.yml
+package-lock.json
 test-results.xml
