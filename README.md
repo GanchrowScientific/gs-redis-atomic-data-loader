@@ -94,4 +94,8 @@ npm uninstall gs-redis-atomic-data-loader
 
 So do I :(
 
-Oh, to this project.  My fault.  (My fault, indeed.)
+Oh, to this project.
+
+Fork, create branch, make changes, push with well-formatted commit message, create pull-request
+
+(This change will **"commit message"**, first letter uppercase)
