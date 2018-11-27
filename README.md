@@ -28,7 +28,7 @@ redis-cli hset sideways paul giamathioahiad
 
 ## Okay?  What on Earth are you talking about?
 
-Well ladies, with just a simple Javascript Object, the gs-redis-atomic-data-loader does the rest for you
+Well persons, with just a simple Javascript Object, the gs-redis-atomic-data-loader does the rest for you
 
 Behold!  The result:
 
@@ -43,9 +43,9 @@ Behold!  The result:
 }
 ```
 
-## Now now chico, this isn't telling me anything
+## This isn't telling me anything
 
-Fine then.  My name isn't chico BTW
+Fine then.  Maybe this will help?
 
 ```typescript
 import {RedisAtomicDataLoader} from 'gs-redis-atomic-data-loader';
@@ -84,7 +84,7 @@ Shoot I forgot to mention the most important part
 npm install gs-redis-atomic-data-loader
 ```
 
-Followed by (after a few seconds)
+Followed by (after a few seconds probably)
 
 ```
 npm uninstall gs-redis-atomic-data-loader

@@ -2,7 +2,7 @@
   "name": "gs-redis-atomic-data-loader",
   "description": "Codeless redis data loader!!!",
   "repository": "https://github.com/GanchrowScientific/gs-redis-atomic-data-loader",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
