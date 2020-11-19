@@ -1,4 +1,4 @@
-/* Copyright © 2018 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2020 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 export const LUA_COMMANDS: any = {};
@@ -30,8 +30,13 @@ LUA_COMMANDS.commandTable = `
         partial = partial or {}
         local keys = redis.call('keys', arg)
         if #keys > 0 then
-          for key, field in pairs(zipHash(keys, redis.call('mget', unpack(keys)))) do
-            partial[key] = field
+          for _, k in ipairs(keys) do
+            if redis.call('TYPE', k).ok == 'string' then
+              local v = redis.call('get', k)
+              for key, field in pairs(zipHash({k}, {v})) do
+                partial[key] = field
+              end
+            end
           end
         end
         return partial
