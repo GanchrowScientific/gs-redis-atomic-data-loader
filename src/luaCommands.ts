@@ -1,7 +1,20 @@
-/* Copyright © 2018 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018-2020 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 export const LUA_COMMANDS: any = {};
+LUA_COMMANDS.chunk = `
+  local function chunk(items, chunkLength)
+    local innerChunk = {}
+    chunkLength = chunkLength or 1000
+    for i = 1, math.ceil(#items / chunkLength) do
+      innerChunk[i] = {}
+      for j = 1, chunkLength do
+        table.insert(innerChunk[i], items[j + chunkLength * (i - 1)])
+      end
+    end
+    return innerChunk
+  end
+`;
 LUA_COMMANDS.isJson = `
   local function isJson(value)
     return type(value) == 'string' and
@@ -30,8 +43,10 @@ LUA_COMMANDS.commandTable = `
         partial = partial or {}
         local keys = redis.call('keys', arg)
         if #keys > 0 then
-          for key, field in pairs(zipHash(keys, redis.call('mget', unpack(keys)))) do
-            partial[key] = field
+          for _, chunked in ipairs(chunk(keys, 1000)) do
+            for key, field in pairs(zipHash(chunked, redis.call('mget', unpack(chunked)))) do
+              partial[key] = field
+            end
           end
         end
         return partial
